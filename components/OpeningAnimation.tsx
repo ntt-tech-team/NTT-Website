@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { NTTLogoMarkWhite } from '@/components/NTTLogo'
 
 type Phase = 'canvas' | 'logo' | 'tagline' | 'outro'
 
@@ -150,6 +151,10 @@ export function OpeningAnimation() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
             >
+              {/* If logo-white.png exists in /public it renders here, otherwise nothing */}
+              <div className="flex justify-center mb-3">
+                <NTTLogoMarkWhite size={64} />
+              </div>
               <h1
                 className="font-black leading-none tracking-tighter select-none"
                 style={{

@@ -1,0 +1,15 @@
+DROP YOUR NTT LOGO FILES HERE
+==============================
+
+Place your logo files in this /public folder with these exact filenames:
+
+  logo.png        — Main logo (used in top navbar)
+                    Recommended: transparent background, any color works
+                    Size: at least 128x128px
+
+  logo-white.png  — White / light version of the logo
+                    Used in the opening animation (dark background)
+                    If this file is missing, the "NTT" gradient text shows instead
+
+After adding the files, redeploy to Vercel — it picks them up automatically.
+No code changes needed.

@@ -1,6 +1,7 @@
 'use client'
 import { motion } from 'framer-motion'
 import { useThemeStore } from '@/store/theme'
+import { NTTLogoMark } from '@/components/NTTLogo'
 
 export function TopBar() {
   const { isDark, toggle } = useThemeStore()
@@ -10,14 +11,14 @@ export function TopBar() {
       className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center justify-between px-4 glass"
       style={{ borderBottom: '1px solid var(--border)' }}
     >
-      {/* Logo */}
-      <div className="flex items-center gap-2.5">
-        <div
-          className="w-8 h-8 rounded-[10px] flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-          style={{ background: 'linear-gradient(135deg, #7C6EFF, #38C2FF)' }}
-        >
-          N
-        </div>
+      {/* Logo — <a href="/"> causes a true full-page reload on every click */}
+      <a
+        href="/"
+        className="flex items-center gap-2.5"
+        style={{ textDecoration: 'none' }}
+        aria-label="NTT home — reload"
+      >
+        <NTTLogoMark size={32} className="rounded-[10px]" />
         <div className="flex flex-col leading-none gap-0.5">
           <span
             className="text-sm font-bold tracking-tight"
@@ -32,11 +33,10 @@ export function TopBar() {
             Neuro Tech Titans
           </span>
         </div>
-      </div>
+      </a>
 
       {/* Right controls */}
       <div className="flex items-center gap-2">
-        {/* Notification bell */}
         <button
           className="w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
           style={{ color: 'var(--text-secondary)' }}
@@ -48,7 +48,6 @@ export function TopBar() {
           </svg>
         </button>
 
-        {/* Theme toggle */}
         <motion.button
           onClick={toggle}
           whileTap={{ scale: 0.88 }}
