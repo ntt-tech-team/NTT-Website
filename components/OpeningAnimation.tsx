@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 type Phase = 'idle' | 'assemble' | 'hold' | 'outro'
 
@@ -75,7 +75,7 @@ export function OpeningAnimation() {
   if (!visible) return null
 
   return (
-    <AnimatePresence>
+    <AnimatePresence onExitComplete={() => setVisible(false)}>
       {phase !== 'outro' && (
         <motion.div
           key="opening"
@@ -84,10 +84,6 @@ export function OpeningAnimation() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.7, ease: 'easeInOut' }}
-          onAnimationComplete={(def) => {
-            // When exit animation completes
-            if (phase === 'outro') setVisible(false)
-          }}
           onClick={dismiss}
         >
           {/* Background ambient glow */}
