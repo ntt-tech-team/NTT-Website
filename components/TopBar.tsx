@@ -20,7 +20,7 @@ export function TopBar() {
       >
         <NTTLogoMark size={32} className="rounded-[10px]" />
         <span
-          className="text-[8px] font-bold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full hidden sm:inline-flex items-center"
+          className="text-[8px] font-bold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full inline-flex items-center"
           style={{
             fontFamily: 'var(--font-mono)',
             background: 'linear-gradient(135deg, rgba(124,110,255,0.18) 0%, rgba(56,194,255,0.18) 100%)',

@@ -5,6 +5,8 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import { TopBar } from '@/components/TopBar'
 import { BottomNav } from '@/components/BottomNav'
 import { OpeningAnimation } from '@/components/OpeningAnimation'
+import { SidebarLeft } from '@/components/SidebarLeft'
+import { SidebarRight } from '@/components/SidebarRight'
 
 const displayFont = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -38,7 +40,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex flex-col min-h-screen">
             <TopBar />
             <main className="flex-1 pt-14 pb-24">
-              {children}
+              <div className="app-layout">
+                <SidebarLeft />
+                <div className="app-main">{children}</div>
+                <SidebarRight />
+              </div>
             </main>
             <BottomNav />
           </div>
