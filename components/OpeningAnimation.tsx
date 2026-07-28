@@ -1,18 +1,36 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { NTTLogoMarkWhite } from '@/components/NTTLogo'
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence, useAnimation } from 'framer-motion'
 
-type Phase = 'canvas' | 'logo' | 'tagline' | 'outro'
+type Phase = 'idle' | 'assemble' | 'hold' | 'outro'
 
-const TAGLINE = 'NEURO TECH TITANS · SRMIST TRICHY'
+// Fragment origin positions (off-screen directions)
+const FRAGMENT_ORIGINS = [
+  { x: -320, y: -280, rotate: -145 },
+  { x: 260,  y: -310, rotate:  120 },
+  { x: -280, y:  220, rotate: -90  },
+  { x: 310,  y:  260, rotate:  155 },
+  { x: -360, y:   40, rotate: -60  },
+  { x:  340, y:  -80, rotate:  80  },
+  { x:   80, y: -340, rotate: -110 },
+  { x: -120, y:  320, rotate:  170 },
+  { x:  200, y:  300, rotate: -135 },
+]
+
+// Per-letter initial flying positions
+const LETTER_CONFIGS = [
+  { from: { x: -380, y: -200, rotate: -130, scale: 0.3 } }, // N
+  { from: { x:    0, y:  400, rotate:  180, scale: 0.2 } }, // T
+  { from: { x:  380, y: -220, rotate:  125, scale: 0.3 } }, // T
+]
+
+const LETTERS = ['N', 'T', 'T']
 
 export function OpeningAnimation() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const rafRef = useRef<number>(0)
-  const [phase, setPhase] = useState<Phase>('canvas')
-  const [typeText, setTypeText] = useState('')
+  const [phase, setPhase] = useState<Phase>('idle')
   const [visible, setVisible] = useState(true)
+  const [showFlash, setShowFlash] = useState(false)
+  const [showShockwave, setShowShockwave] = useState(false)
 
   const dismiss = () => {
     if (typeof sessionStorage !== 'undefined') {
@@ -21,202 +39,238 @@ export function OpeningAnimation() {
     setPhase('outro')
   }
 
-  // Check session + run timeline
   useEffect(() => {
     if (typeof sessionStorage === 'undefined') return
     if (sessionStorage.getItem('ntt_seen')) {
       setVisible(false)
       return
     }
-    const t1 = setTimeout(() => setPhase('logo'), 500)
-    const t2 = setTimeout(() => setPhase('tagline'), 1400)
-    const t3 = setTimeout(() => {
+
+    // Small idle pause, then fly in
+    const t1 = setTimeout(() => setPhase('assemble'), 300)
+
+    // Impact flash + shockwave at assembly moment
+    const t2 = setTimeout(() => {
+      setShowFlash(true)
+      setShowShockwave(true)
+      setTimeout(() => setShowFlash(false), 120)
+      setTimeout(() => setShowShockwave(false), 600)
+    }, 1100)
+
+    // Hold briefly, then exit
+    const t3 = setTimeout(() => setPhase('hold'), 1200)
+    const t4 = setTimeout(() => {
       sessionStorage.setItem('ntt_seen', '1')
       setPhase('outro')
     }, 2800)
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
-  }, [])
 
-  // Typewriter
-  useEffect(() => {
-    if (phase !== 'tagline') return
-    let i = 0
-    const id = setInterval(() => {
-      i++
-      setTypeText(TAGLINE.slice(0, i))
-      if (i >= TAGLINE.length) clearInterval(id)
-    }, 38)
-    return () => clearInterval(id)
-  }, [phase])
-
-  // Canvas particle system
-  useEffect(() => {
-    if (!visible) return
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    resize()
-    window.addEventListener('resize', resize)
-
-    const count = Math.max(24, Math.min(72, Math.floor(window.innerWidth / 13)))
-    const particles = Array.from({ length: count }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.55,
-      vy: (Math.random() - 0.5) * 0.55,
-      r: Math.random() * 1.6 + 0.6,
-      violet: Math.random() > 0.42,
-    }))
-
-    const draw = () => {
-      const w = canvas.width
-      const h = canvas.height
-
-      ctx.clearRect(0, 0, w, h)
-      ctx.fillStyle = '#08081A'
-      ctx.fillRect(0, 0, w, h)
-
-      // Move + draw dots
-      for (const p of particles) {
-        p.x += p.vx
-        p.y += p.vy
-        if (p.x < -8) p.x = w + 8
-        else if (p.x > w + 8) p.x = -8
-        if (p.y < -8) p.y = h + 8
-        else if (p.y > h + 8) p.y = -8
-
-        ctx.globalAlpha = 0.75
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2)
-        ctx.fillStyle = p.violet ? '#7C6EFF' : '#38C2FF'
-        ctx.fill()
-      }
-
-      // Connections
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x
-          const dy = particles[i].y - particles[j].y
-          const d = Math.sqrt(dx * dx + dy * dy)
-          if (d < 140) {
-            ctx.globalAlpha = (1 - d / 140) * 0.32
-            ctx.beginPath()
-            ctx.moveTo(particles[i].x, particles[i].y)
-            ctx.lineTo(particles[j].x, particles[j].y)
-            ctx.strokeStyle = particles[i].violet ? '#7C6EFF' : '#38C2FF'
-            ctx.lineWidth = 0.7
-            ctx.stroke()
-          }
-        }
-      }
-      ctx.globalAlpha = 1
-      rafRef.current = requestAnimationFrame(draw)
-    }
-
-    draw()
     return () => {
-      cancelAnimationFrame(rafRef.current)
-      window.removeEventListener('resize', resize)
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
+      clearTimeout(t4)
     }
-  }, [visible])
+  }, [])
 
   if (!visible) return null
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden cursor-pointer"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: phase === 'outro' ? 0 : 1 }}
-      transition={{ duration: 0.65, ease: 'easeOut' }}
-      onAnimationComplete={() => {
-        if (phase === 'outro') setVisible(false)
-      }}
-      onClick={dismiss}
-    >
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
+    <AnimatePresence>
+      {phase !== 'outro' && (
+        <motion.div
+          key="opening"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden cursor-pointer"
+          style={{ background: '#08081A' }}
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
+          onAnimationComplete={(def) => {
+            // When exit animation completes
+            if (phase === 'outro') setVisible(false)
+          }}
+          onClick={dismiss}
+        >
+          {/* Background ambient glow */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: phase === 'hold' ? 1 : 0 }}
+            transition={{ duration: 0.5 }}
+            style={{
+              background: 'radial-gradient(ellipse 60% 45% at 50% 50%, rgba(124,110,255,0.12) 0%, transparent 70%)',
+            }}
+          />
 
-      {/* Center content */}
-      <div className="relative z-10 text-center select-none px-6">
-        <AnimatePresence>
-          {phase !== 'canvas' && (
+          {/* Floating background shards (decorative) */}
+          {phase !== 'idle' && FRAGMENT_ORIGINS.map((_, i) => (
             <motion.div
-              key="ntt-logo"
-              initial={{ opacity: 0, scale: 0.78, y: 24 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {/* If logo-white.png exists in /public it renders here, otherwise nothing */}
-              <div className="flex justify-center mb-3">
-                <NTTLogoMarkWhite size={64} />
-              </div>
-              <h1
-                className="font-black leading-none tracking-tighter select-none"
+              key={`shard-${i}`}
+              className="absolute pointer-events-none"
+              initial={{
+                x: FRAGMENT_ORIGINS[i].x * 0.4,
+                y: FRAGMENT_ORIGINS[i].y * 0.4,
+                rotate: FRAGMENT_ORIGINS[i].rotate,
+                opacity: 0,
+                scale: 0.4,
+              }}
+              animate={{
+                x: FRAGMENT_ORIGINS[i].x * 0.08,
+                y: FRAGMENT_ORIGINS[i].y * 0.08,
+                rotate: FRAGMENT_ORIGINS[i].rotate * 0.3,
+                opacity: phase === 'hold' ? [0, 0.18, 0.18, 0] : [0, 0.15],
+                scale: 0.6,
+              }}
+              transition={{
+                duration: 0.8,
+                delay: 0.05 * i,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              style={{
+                width: 28 + (i % 4) * 14,
+                height: 3,
+                borderRadius: 2,
+                background: i % 2 === 0
+                  ? 'linear-gradient(90deg, #7C6EFF, transparent)'
+                  : 'linear-gradient(90deg, #38C2FF, transparent)',
+              }}
+            />
+          ))}
+
+          {/* Main NTT letters */}
+          <div className="relative flex items-center justify-center select-none" style={{ gap: 'clamp(6px, 2vw, 18px)' }}>
+            {LETTERS.map((letter, i) => (
+              <motion.span
+                key={`letter-${i}`}
+                initial={{
+                  x: LETTER_CONFIGS[i].from.x,
+                  y: LETTER_CONFIGS[i].from.y,
+                  rotate: LETTER_CONFIGS[i].from.rotate,
+                  scale: LETTER_CONFIGS[i].from.scale,
+                  opacity: 0,
+                }}
+                animate={
+                  phase === 'idle'
+                    ? {}
+                    : {
+                        x: 0,
+                        y: 0,
+                        rotate: 0,
+                        scale: 1,
+                        opacity: 1,
+                      }
+                }
+                transition={{
+                  duration: 0.72,
+                  delay: i * 0.045,
+                  ease: [0.12, 0.9, 0.35, 1],
+                }}
                 style={{
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(5.5rem, 18vw, 9rem)',
-                  background: 'linear-gradient(135deg, #7C6EFF 0%, #38C2FF 100%)',
+                  fontSize: 'clamp(5.5rem, 20vw, 9.5rem)',
+                  fontWeight: 900,
+                  lineHeight: 1,
+                  background: 'linear-gradient(135deg, #7C6EFF 0%, #a89fff 45%, #38C2FF 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
+                  letterSpacing: '-0.04em',
+                  filter: 'drop-shadow(0 0 24px rgba(124,110,255,0.5))',
+                  display: 'inline-block',
                 }}
               >
-                NTT
-              </h1>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                {letter}
+              </motion.span>
+            ))}
 
-        <AnimatePresence>
-          {(phase === 'tagline' || phase === 'outro') && (
-            <motion.div
-              key="tagline"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-              className="mt-5"
-            >
-              <span
-                className="text-[11px] sm:text-[13px] tracking-[0.28em]"
+            {/* Impact flash overlay */}
+            <AnimatePresence>
+              {showFlash && (
+                <motion.div
+                  key="flash"
+                  className="absolute inset-0 pointer-events-none"
+                  initial={{ opacity: 0.9 }}
+                  animate={{ opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.12 }}
+                  style={{
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(124,110,255,0.2) 50%, transparent 80%)',
+                    borderRadius: 24,
+                    transform: 'scale(2)',
+                  }}
+                />
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Shockwave ring */}
+          <AnimatePresence>
+            {showShockwave && (
+              <motion.div
+                key="shockwave"
+                className="absolute pointer-events-none"
+                initial={{ width: 40, height: 40, opacity: 0.8, borderWidth: 3 }}
+                animate={{ width: 420, height: 180, opacity: 0, borderWidth: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55, ease: 'easeOut' }}
                 style={{
-                  color: 'rgba(144, 144, 190, 0.88)',
+                  borderRadius: '50%',
+                  borderStyle: 'solid',
+                  borderColor: 'rgba(124,110,255,0.6)',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Tagline fade-in after assembly */}
+          <AnimatePresence>
+            {phase === 'hold' && (
+              <motion.p
+                key="tagline"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="absolute tracking-[0.28em] uppercase"
+                style={{
+                  top: 'calc(50% + clamp(3.5rem, 10vw, 6rem))',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  fontSize: 'clamp(8px, 2vw, 11px)',
+                  color: 'rgba(144,144,190,0.75)',
+                  fontFamily: 'var(--font-mono)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Neuro Tech Titans · SRMIST Trichy
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* Tap to skip hint */}
+          <AnimatePresence>
+            {phase === 'assemble' && (
+              <motion.p
+                key="skip-hint"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="absolute bottom-8 tracking-[0.32em] uppercase pointer-events-none"
+                style={{
+                  fontSize: 10,
+                  color: 'rgba(107,107,155,0.55)',
                   fontFamily: 'var(--font-mono)',
                 }}
               >
-                {typeText}
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ repeat: Infinity, duration: 0.75 }}
-                >
-                  |
-                </motion.span>
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Skip hint */}
-      <AnimatePresence>
-        {phase === 'logo' && (
-          <motion.p
-            key="skip-hint"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className="absolute bottom-8 text-[10px] tracking-[0.32em] uppercase pointer-events-none"
-            style={{ color: 'rgba(107, 107, 155, 0.6)', fontFamily: 'var(--font-mono)' }}
-          >
-            tap anywhere to skip
-          </motion.p>
-        )}
-      </AnimatePresence>
-    </motion.div>
+                tap anywhere to skip
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

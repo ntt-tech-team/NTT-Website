@@ -12,16 +12,7 @@ export function HomeCalendar() {
       className="glass rounded-2xl p-4"
     >
       {/* Section header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span style={{ fontSize: 15 }}>🗓️</span>
-          <span
-            className="text-[9px] font-semibold tracking-[0.22em] uppercase"
-            style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}
-          >
-            This month
-          </span>
-        </div>
+      <div className="flex items-center justify-end mb-3">
         <Link
           href="/events"
           className="text-[11px] font-medium"

@@ -19,20 +19,18 @@ export function TopBar() {
         aria-label="NTT home — reload"
       >
         <NTTLogoMark size={32} className="rounded-[10px]" />
-        <div className="flex flex-col leading-none gap-0.5">
-          <span
-            className="text-sm font-bold tracking-tight"
-            style={{ color: 'var(--text)', fontFamily: 'var(--font-display)' }}
-          >
-            NTT
-          </span>
-          <span
-            className="text-[8px] tracking-[0.15em] uppercase hidden sm:block"
-            style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}
-          >
-            Neuro Tech Titans
-          </span>
-        </div>
+        <span
+          className="text-[8px] font-bold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full hidden sm:inline-flex items-center"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            background: 'linear-gradient(135deg, rgba(124,110,255,0.18) 0%, rgba(56,194,255,0.18) 100%)',
+            border: '1px solid rgba(124,110,255,0.35)',
+            color: '#a89fff',
+            letterSpacing: '0.18em',
+          }}
+        >
+          Neuro Tech Titans
+        </span>
       </a>
 
       {/* Right controls */}
