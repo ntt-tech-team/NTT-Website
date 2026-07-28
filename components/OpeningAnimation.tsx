@@ -236,12 +236,12 @@ export function OpeningAnimation() {
                 className="absolute tracking-[0.28em] uppercase"
                 style={{
                   top: 'calc(50% + clamp(3.5rem, 10vw, 6rem))',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
+                  left: 0,
+                  right: 0,
+                  textAlign: 'center',
                   fontSize: 'clamp(8px, 2vw, 11px)',
                   color: 'rgba(144,144,190,0.75)',
                   fontFamily: 'var(--font-mono)',
-                  whiteSpace: 'nowrap',
                 }}
               >
                 Neuro Tech Titans · SRMIST Trichy
