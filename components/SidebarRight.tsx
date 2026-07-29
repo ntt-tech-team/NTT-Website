@@ -1,6 +1,5 @@
 'use client'
 import { motion } from 'framer-motion'
-import Link from 'next/link'
 import { Calendar } from '@/components/Calendar'
 
 export function SidebarRight() {
@@ -20,18 +19,18 @@ export function SidebarRight() {
           >
             Calendar
           </span>
-          <Link
+          <a
             href="/events"
             className="text-[11px] font-medium"
             style={{ color: 'var(--accent)', textDecoration: 'none' }}
           >
             View all
-          </Link>
+          </a>
         </div>
         <Calendar mini />
       </motion.div>
 
-      {/* Quick Links */}
+      {/* Event Poster */}
       <motion.div
         initial={{ opacity: 0, x: 16 }}
         animate={{ opacity: 1, x: 0 }}
@@ -42,42 +41,18 @@ export function SidebarRight() {
           className="text-[9px] font-semibold tracking-[0.22em] uppercase block mb-3"
           style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}
         >
-          Quick Links
+          Upcoming Event
         </span>
-        <div className="space-y-1.5">
-          {[
-            { href: '/events', label: 'Upcoming Events', icon: '📅', accent: '#7C6EFF' },
-            { href: '/gallery', label: 'Photo Gallery', icon: '📸', accent: '#38C2FF' },
-            { href: '/announcements', label: 'Announcements', icon: '📢', accent: '#A78BFA' },
-            { href: '/profile', label: 'My Profile', icon: '👤', accent: '#7C6EFF' },
-          ].map(({ href, label, icon, accent }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all group"
-              style={{
-                textDecoration: 'none',
-                background: 'transparent',
-                border: '1px solid transparent',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--accent-muted)'
-                e.currentTarget.style.borderColor = 'var(--border-accent)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.borderColor = 'transparent'
-              }}
-            >
-              <span style={{ fontSize: 14 }}>{icon}</span>
-              <span
-                className="text-[11px] font-medium"
-                style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-display)' }}
-              >
-                {label}
-              </span>
-            </Link>
-          ))}
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ border: '1px solid var(--border)' }}
+        >
+          <img
+            src="/poster.png"
+            alt="Upcoming event poster"
+            className="w-full h-auto block"
+            style={{ objectFit: 'cover' }}
+          />
         </div>
       </motion.div>
 
