@@ -42,6 +42,7 @@ export function OpeningAnimation() {
     if (typeof sessionStorage === 'undefined') return
     if (sessionStorage.getItem('ntt_seen')) {
       setVisible(false)
+      setTimeout(() => window.dispatchEvent(new Event('ntt:animation-done')), 150)
       return
     }
 
@@ -78,7 +79,7 @@ export function OpeningAnimation() {
   if (!visible) return null
 
   return (
-    <AnimatePresence onExitComplete={() => setVisible(false)}>
+    <AnimatePresence onExitComplete={() => { setVisible(false); window.dispatchEvent(new Event('ntt:animation-done')) }}>
       {phase !== 'outro' && (
         <motion.div
           key="opening"

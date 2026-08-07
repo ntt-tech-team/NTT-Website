@@ -8,6 +8,7 @@ import { OpeningAnimation } from '@/components/OpeningAnimation'
 import { SidebarLeft } from '@/components/SidebarLeft'
 import { SidebarRight } from '@/components/SidebarRight'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
+import PWAInstallPrompt from '@/components/PWAInstallPrompt'
 
 const displayFont = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -53,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="dark" suppressHydrationWarning>
       <body className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable} font-sans antialiased`}>
         <ServiceWorkerRegister />
+        <PWAInstallPrompt />
         <ThemeProvider>
           <OpeningAnimation />
           <div className="flex flex-col min-h-screen">
