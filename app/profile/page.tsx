@@ -1,6 +1,7 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
+import Link from 'next/link'
 
 export default function ProfilePage() {
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -75,6 +76,57 @@ export default function ProfilePage() {
             </div>
           </div>
         ))}
+      </motion.div>
+
+      {/* Join NTT — always active, below the locked rows */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        className="mt-3"
+      >
+        <Link href="/join" className="block">
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            className="rounded-xl p-3.5 flex items-center gap-3"
+            style={{
+              background: 'linear-gradient(135deg, rgba(124,110,255,0.12) 0%, rgba(56,194,255,0.08) 100%)',
+              border: '1px solid rgba(124,110,255,0.35)',
+            }}
+          >
+            {/* Icon */}
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ background: 'linear-gradient(135deg, rgba(124,110,255,0.25) 0%, rgba(56,194,255,0.25) 100%)' }}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <defs>
+                  <linearGradient id="joinRowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#7C6EFF" />
+                    <stop offset="100%" stopColor="#38C2FF" />
+                  </linearGradient>
+                </defs>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" stroke="url(#joinRowGrad)" />
+                <circle cx="9" cy="7" r="4" stroke="url(#joinRowGrad)" />
+                <line x1="19" y1="8" x2="19" y2="14" stroke="url(#joinRowGrad)" />
+                <line x1="22" y1="11" x2="16" y2="11" stroke="url(#joinRowGrad)" />
+              </svg>
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text)', fontFamily: 'var(--font-display)' }}>
+                Become an NTT Member
+              </p>
+              <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+                Apply to join the club · Open to all years
+              </p>
+            </div>
+
+            {/* Chevron */}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--accent)', flexShrink: 0 }}>
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </motion.div>
+        </Link>
       </motion.div>
 
       {/* Soft gate slide-up sheet */}
