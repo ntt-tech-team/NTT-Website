@@ -29,7 +29,7 @@ const CORE_TEAM: TeamRole[] = [
     role: 'Vice President',
     accent: '#38C2FF',
     members: [
-      { name: 'Vice President', initials: 'VP', photo: '/team/V.jpeg' },
+      { name: 'Vice President', initials: 'VP', photo: '/team/VP.jpg' },
     ],
   },
   {
@@ -72,10 +72,9 @@ const CORE_TEAM: TeamRole[] = [
     role: 'Event Coordinator',
     accent: '#38C2FF',
     members: [
-      { name: 'Event Coord 1', initials: 'EC', photo: '/team/events.jpg' },
-      // Add more members below:
-      // { name: 'Event Coord 2', initials: 'EC', photo: '/team/events-2.jpg' },
-      // { name: 'Event Coord 3', initials: 'EC', photo: '/team/events-3.jpg' },
+      { name: 'Event Coord', initials: 'EC', photo: '/team/event-coord-1.jpg' },
+      { name: 'Event Coord', initials: 'EC', photo: '/team/event-coord-2.jpg' },
+      { name: 'Event Coord', initials: 'EC', photo: '/team/event-coord-3.jpg' },
     ],
   },
 ]

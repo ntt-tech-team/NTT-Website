@@ -21,13 +21,15 @@ This folder is served at the URL root `/team/…`, so a file at `/public/team/so
 | Role               | File Name in Code         | Actual File Needed at             | Format  |
 | ------------------ | ------------------------- | --------------------------------- | ------- |
 | **President**      | `/team/president.jpg`     | `public/team/president.jpg`       | `.jpg`  |
-| **Vice President** | `/team/V.jpeg`            | `public/team/V.jpeg`              | `.jpeg` |
+| **Vice President** | `/team/VP.jpg`            | `public/team/VP.jpg`              | `.jpg`  |
 | **Secretary**      | `/team/Secretary.jpeg`    | `public/team/Secretary.jpeg`      | `.jpeg` |
 | **Treasurer**      | `/team/Treasurer.jpeg`    | `public/team/Treasurer.jpeg`      | `.jpeg` |
 | **Technical Lead** | `/team/tech-lead.jpg`     | `public/team/tech-lead.jpg`       | `.jpg`  |
 | **Social Media**   | `/team/social.jpg`        | `public/team/social.jpg`          | `.jpg`  |
 | **Design Lead**    | `/team/MD Lead.jpeg`      | `public/team/MD Lead.jpeg`        | `.jpeg` |
-| **Event Coord**    | `/team/events.jpg`        | `public/team/events.jpg`          | `.jpg`  |
+| **Event Coord 1**  | `/team/event-coord-1.jpg` | `public/team/event-coord-1.jpg`   | `.jpg`  |
+| **Event Coord 2**  | `/team/event-coord-2.jpg` | `public/team/event-coord-2.jpg`   | `.jpg`  |
+| **Event Coord 3**  | `/team/event-coord-3.jpg` | `public/team/event-coord-3.jpg`   | `.jpg`  |
 
 > [!IMPORTANT]
 > **File names are case-sensitive.** `Treasurer.jpeg` ≠ `treasurer.jpeg`. Make sure the file name exactly matches the `photo` field in the code.
