@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, DM_Sans, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
+import { AuthProvider } from '@/components/AuthProvider'
 import { TopBar } from '@/components/TopBar'
 import { BottomNav } from '@/components/BottomNav'
 import { OpeningAnimation } from '@/components/OpeningAnimation'
@@ -56,18 +57,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ServiceWorkerRegister />
         <PWAInstallPrompt />
         <ThemeProvider>
-          <OpeningAnimation />
-          <div className="flex flex-col min-h-screen">
-            <TopBar />
-            <main className="flex-1 pt-14 pb-24">
-              <div className="app-layout">
-                <SidebarLeft />
-                <div className="app-main">{children}</div>
-                <SidebarRight />
-              </div>
-            </main>
-            <BottomNav />
-          </div>
+          <AuthProvider>
+            <OpeningAnimation />
+            <div className="flex flex-col min-h-screen">
+              <TopBar />
+              <main className="flex-1 pt-14 pb-24">
+                <div className="app-layout">
+                  <SidebarLeft />
+                  <div className="app-main">{children}</div>
+                  <SidebarRight />
+                </div>
+              </main>
+              <BottomNav />
+            </div>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

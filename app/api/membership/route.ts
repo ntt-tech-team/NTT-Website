@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase-server'
+import { getCurrentUserId, saveMembershipApplication } from '@/lib/membership'
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,12 +10,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // Basic email format check
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
     }
 
-    const { error } = await supabaseAdmin.from('membership_applications').insert({
+    const userId = await getCurrentUserId()
+    const { error } = await saveMembershipApplication({
+      user_id: userId,
       full_name: full_name.trim(),
       email: email.trim().toLowerCase(),
       year,
@@ -27,8 +28,7 @@ export async function POST(req: NextRequest) {
     })
 
     if (error) {
-      console.error('[membership] Supabase insert error:', error)
-      // Unique email check — Supabase returns code 23505 for unique violations
+      console.error('[membership] insert error:', error)
       if (error.code === '23505') {
         return NextResponse.json(
           { error: 'An application with this email already exists.' },

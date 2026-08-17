@@ -1,28 +1,47 @@
 'use client'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-// ─── Mock event data (will come from Supabase in Phase 3) ───────────────────
-const EVENT_MAP: Record<string, { title: string; color: string; rgb: string; venue: string }> = {
-  '2026-07-26': { title: 'Vibe-A-Thon 2026',    color: '#7C6EFF', rgb: '124,110,255', venue: 'SRMIST Trichy' },
-  '2026-08-03': { title: 'DevDrop Workshop',     color: '#38C2FF', rgb: '56,194,255',  venue: 'SRMIST Trichy' },
-  '2026-08-15': { title: 'Cutthroat Coders',     color: '#A78BFA', rgb: '167,139,250', venue: 'SRMIST Trichy' },
-}
+import type { EventItem } from '@/lib/supabase/types'
+import { eventDayKey } from '@/lib/format'
 
 const MONTHS = ['January','February','March','April','May','June',
                  'July','August','September','October','November','December']
 const DAY_HEADERS = ['Su','Mo','Tu','We','Th','Fr','Sa']
 
-interface CalendarProps {
-  mini?: boolean   // compact home-page widget vs full events-page view
+type CalendarEventDot = {
+  date: string
+  title: string
+  color: string
+  rgb: string
+  venue: string
 }
 
-export function Calendar({ mini = false }: CalendarProps) {
+function toDots(events: EventItem[]): Record<string, CalendarEventDot> {
+  const map: Record<string, CalendarEventDot> = {}
+  for (const event of events) {
+    map[eventDayKey(event.starts_at)] = {
+      date: eventDayKey(event.starts_at),
+      title: event.title,
+      color: event.accent,
+      rgb: event.accent_rgb,
+      venue: event.venue,
+    }
+  }
+  return map
+}
+
+interface CalendarProps {
+  mini?: boolean
+  events?: EventItem[]
+  onRegister?: (dateKey: string) => void
+}
+
+export function Calendar({ mini = false, events = [], onRegister }: CalendarProps) {
+  const EVENT_MAP = toDots(events)
   const today = new Date()
   const [cur, setCur] = useState({ y: today.getFullYear(), m: today.getMonth() })
   const [selected, setSelected] = useState<string | null>(null)
 
-  // Build the grid
   const firstDow    = new Date(cur.y, cur.m, 1).getDay()
   const daysInMonth = new Date(cur.y, cur.m + 1, 0).getDate()
 
@@ -45,7 +64,6 @@ export function Calendar({ mini = false }: CalendarProps) {
 
   return (
     <div>
-      {/* ── Month header ── */}
       <div className="flex items-center justify-between mb-3">
         <button
           onClick={prev}
@@ -77,7 +95,6 @@ export function Calendar({ mini = false }: CalendarProps) {
         </button>
       </div>
 
-      {/* ── Day-of-week headers ── */}
       <div className="grid grid-cols-7 mb-1">
         {DAY_HEADERS.map(d => (
           <div
@@ -90,7 +107,6 @@ export function Calendar({ mini = false }: CalendarProps) {
         ))}
       </div>
 
-      {/* ── Day cells ── */}
       <div className="grid grid-cols-7 gap-y-0.5">
         {cells.map((day, idx) => {
           if (!day) return <div key={`empty-${idx}`} style={{ height: cellH }} />
@@ -126,7 +142,6 @@ export function Calendar({ mini = false }: CalendarProps) {
                 {day}
               </span>
 
-              {/* Event dot */}
               {event && (
                 <div
                   className="rounded-full mt-0.5"
@@ -143,7 +158,6 @@ export function Calendar({ mini = false }: CalendarProps) {
         })}
       </div>
 
-      {/* ── Selected event detail panel (full mode only) ── */}
       {!mini && (
         <AnimatePresence>
           {selectedEvent && selected && (
@@ -179,6 +193,7 @@ export function Calendar({ mini = false }: CalendarProps) {
               </p>
               <motion.button
                 whileTap={{ scale: 0.97 }}
+                onClick={() => onRegister?.(selected)}
                 className="mt-3 w-full py-2 rounded-xl text-xs font-semibold text-white"
                 style={{ background: selectedEvent.color }}
               >
@@ -189,7 +204,6 @@ export function Calendar({ mini = false }: CalendarProps) {
         </AnimatePresence>
       )}
 
-      {/* Mini mode: event legend */}
       {mini && (
         <div className="mt-3 space-y-1.5">
           {Object.entries(EVENT_MAP)

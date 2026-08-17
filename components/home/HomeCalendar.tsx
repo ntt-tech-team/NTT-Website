@@ -2,8 +2,9 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Calendar } from '@/components/Calendar'
+import type { EventItem } from '@/lib/supabase/types'
 
-export function HomeCalendar() {
+export function HomeCalendar({ events }: { events: EventItem[] }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -11,7 +12,6 @@ export function HomeCalendar() {
       transition={{ duration: 0.45, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
       className="glass rounded-2xl p-4"
     >
-      {/* Section header */}
       <div className="flex items-center justify-end mb-3">
         <Link
           href="/events"
@@ -22,7 +22,7 @@ export function HomeCalendar() {
         </Link>
       </div>
 
-      <Calendar mini />
+      <Calendar mini events={events} />
     </motion.div>
   )
 }

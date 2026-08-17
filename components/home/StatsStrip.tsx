@@ -1,16 +1,17 @@
 'use client'
 import { motion } from 'framer-motion'
+import type { ClubStats } from '@/lib/supabase/types'
 
-const stats = [
-  { value: '3', label: 'Events', color: '#7C6EFF' },
-  { value: '47', label: 'Members', color: '#38C2FF' },
-  { value: '8', label: 'This sem', color: '#A78BFA' },
-]
+export function StatsStrip({ stats }: { stats: ClubStats }) {
+  const items = [
+    { value: String(stats.events), label: 'Events', color: '#7C6EFF' },
+    { value: String(stats.members), label: 'Members', color: '#38C2FF' },
+    { value: String(stats.this_sem), label: 'This sem', color: '#A78BFA' },
+  ]
 
-export function StatsStrip() {
   return (
     <div className="grid grid-cols-3 gap-3">
-      {stats.map(({ value, label, color }, i) => (
+      {items.map(({ value, label, color }, i) => (
         <motion.div
           key={label}
           initial={{ opacity: 0, y: 14 }}

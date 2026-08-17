@@ -6,6 +6,16 @@ const withPWA = require("@ducanh2912/next-pwa").default({
   aggressiveFrontEndNavCaching: true,
 });
 
-const nextConfig = {};
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
+  },
+};
 
 module.exports = withPWA(nextConfig);

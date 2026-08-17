@@ -1,7 +1,8 @@
 'use client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/components/AuthProvider'
 
 const YEARS = ['1st Year', '2nd Year', '3rd Year', '4th Year']
 const DEPARTMENTS = [
@@ -12,6 +13,7 @@ const DEPARTMENTS = [
 type Status = 'idle' | 'submitting' | 'success' | 'error'
 
 export default function JoinPage() {
+  const { user, profile, refresh } = useAuth()
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -23,6 +25,19 @@ export default function JoinPage() {
   })
   const [status, setStatus] = useState<Status>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [prefilled, setPrefilled] = useState(false)
+
+  useEffect(() => {
+    if (prefilled || (!user && !profile)) return
+    setForm(prev => ({
+      ...prev,
+      full_name: prev.full_name || profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || '',
+      email: prev.email || profile?.email || user?.email || '',
+      year: prev.year || profile?.year || '',
+      department: prev.department || profile?.department || '',
+    }))
+    setPrefilled(true)
+  }, [user, profile, prefilled])
 
   function set(field: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -48,6 +63,7 @@ export default function JoinPage() {
       }
 
       setStatus('success')
+      await refresh()
     } catch {
       setErrorMsg('Network error. Check your connection and try again.')
       setStatus('error')
