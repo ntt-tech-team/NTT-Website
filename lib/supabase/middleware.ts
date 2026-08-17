@@ -1,4 +1,5 @@
 import { createServerClient, type CookieMethodsServer } from '@supabase/ssr'
+import { NEXT_PROJECT_ROOT } from 'next/dist/build/webpack-config'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
