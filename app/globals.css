@@ -97,3 +97,9 @@ body {
     padding: 0 1.5rem;
   }
 }
+
+/* Membership status badge pulse for 'pending' state */
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

@@ -2,8 +2,36 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState } from 'react'
 
+// Replace with your actual Google Form URL once created
+const MEMBERSHIP_FORM_URL = 'https://forms.google.com/YOUR_FORM_ID'
+
+type MembershipStatus = 'not_applied' | 'pending' | 'approved'
+
+const statusConfig: Record<MembershipStatus, { label: string; bg: string; text: string; border: string }> = {
+  not_applied: {
+    label: 'Not Applied',
+    bg: 'rgba(107, 107, 155, 0.15)',
+    text: 'var(--text-muted)',
+    border: 'rgba(107, 107, 155, 0.25)',
+  },
+  pending: {
+    label: 'Pending',
+    bg: 'rgba(255, 183, 38, 0.15)',
+    text: '#FFB726',
+    border: 'rgba(255, 183, 38, 0.3)',
+  },
+  approved: {
+    label: 'Member ✓',
+    bg: 'rgba(52, 211, 153, 0.15)',
+    text: '#34D399',
+    border: 'rgba(52, 211, 153, 0.3)',
+  },
+}
+
 export default function ProfilePage() {
   const [sheetOpen, setSheetOpen] = useState(false)
+  // TODO: Replace with actual membership status from backend/auth
+  const [membershipStatus] = useState<MembershipStatus>('not_applied')
 
   return (
     <div className="px-4 py-5 max-w-lg mx-auto">
@@ -53,10 +81,68 @@ export default function ProfilePage() {
         </motion.button>
       </motion.div>
 
+      {/* Become a Member — always first */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+        className="mb-2.5"
+      >
+        <motion.div
+          whileHover={membershipStatus !== 'approved' ? { scale: 1.01 } : undefined}
+          whileTap={membershipStatus !== 'approved' ? { scale: 0.98 } : undefined}
+          onClick={() => {
+            if (membershipStatus !== 'approved') {
+              window.open(MEMBERSHIP_FORM_URL, '_blank', 'noopener,noreferrer')
+            }
+          }}
+          className="glass rounded-xl p-3.5 flex items-center gap-3"
+          style={{
+            cursor: membershipStatus === 'approved' ? 'default' : 'pointer',
+            opacity: membershipStatus === 'approved' ? 0.5 : 1,
+            borderLeft: `3px solid ${membershipStatus === 'approved' ? statusConfig.approved.text : 'var(--accent)'}`,
+            transition: 'opacity 0.2s ease, box-shadow 0.2s ease',
+          }}
+        >
+          <span className="text-xl">🏅</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium" style={{ color: 'var(--text)', fontFamily: 'var(--font-display)' }}>
+              {membershipStatus === 'approved' ? "You're already a member" : 'Become a Member'}
+            </p>
+            <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
+              {membershipStatus === 'approved'
+                ? 'Welcome to Neuro Tech Titans!'
+                : membershipStatus === 'pending'
+                  ? 'Your application is under review'
+                  : 'Apply to join NTT Club'}
+            </p>
+          </div>
+
+          {/* Status badge pill */}
+          <span
+            className="text-[10px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0"
+            style={{
+              background: statusConfig[membershipStatus].bg,
+              color: statusConfig[membershipStatus].text,
+              border: `1px solid ${statusConfig[membershipStatus].border}`,
+              ...(membershipStatus === 'pending' ? { animation: 'pulse-badge 2s ease-in-out infinite' } : {}),
+            }}
+          >
+            {statusConfig[membershipStatus].label}
+          </span>
+
+          {/* Arrow icon for non-approved */}
+          {membershipStatus !== 'approved' && (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)', flexShrink: 0 }}>
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          )}
+        </motion.div>
+      </motion.div>
+
       {/* What you get preview */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-        transition={{ delay: 0.25 }}
+        transition={{ delay: 0.3 }}
         className="space-y-2.5"
       >
         {[
