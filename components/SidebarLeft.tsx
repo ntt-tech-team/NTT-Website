@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion'
 import { NTTLogoMark } from '@/components/NTTLogo'
 import { CoreTeamShowcase } from '@/components/team/CoreTeamShowcase'
+import { PartnersStrip } from '@/components/PartnersStrip'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Toggle flags — flip to `true` to restore commented-out tiles
@@ -80,6 +81,9 @@ export function SidebarLeft() {
 
       {/* ───── Core Team Showcase (shared component — also used on /team) ───── */}
       <CoreTeamShowcase />
+
+      {/* ───── Partners / Sponsors strip ───── */}
+      <PartnersStrip />
 
       {/* ═══════════════════════════════════════════════════════
           COMMENTED OUT TILES — To restore, change the flag

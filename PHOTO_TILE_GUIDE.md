@@ -157,6 +157,30 @@ The tile will automatically switch to a row layout showing all members side by s
 
 ---
 
+## Adding / Updating Partner & Sponsor Logos
+
+The left sidebar's **Partners** card (`components/PartnersStrip.tsx`) works the same way as team photos: it points at a file path, and shows a clean text-wordmark fallback badge (e.g. "AWS", "KL") until that file exists — so the card never looks broken while logos are pending.
+
+| Partner                    | Expected path                                | File to drop in `public/partners/`     |
+| --------------------------- | --------------------------------------------- | --------------------------------------- |
+| **AWS User Group — Trichy** | `/partners/aws-user-group-trichy.png`         | `aws-user-group-trichy.png`             |
+| **Kuralit**                  | `/partners/kuralit.png`                       | `kuralit.png`                           |
+
+**To add a logo:** create the `public/partners/` folder if it doesn't exist yet, and drop in a file with the exact name above (PNG with transparent background looks best — the badge has its own padding and background already).
+
+**To add a new partner:** open `components/PartnersStrip.tsx` and add another entry to the `PARTNERS` array:
+
+```typescript
+{
+  name: 'Partner Full Name',
+  short: 'PN',              // shown in the fallback badge if the logo is missing
+  logo: '/partners/partner-slug.png',
+  href: 'https://partner-website.com', // optional — omit to make it non-clickable
+},
+```
+
+---
+
 ## Troubleshooting
 
 | Symptom                          | Cause                                       | Fix                                                    |
