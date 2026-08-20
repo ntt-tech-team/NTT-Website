@@ -63,7 +63,8 @@ export const CORE_TEAM: TeamRole[] = [
     role: 'Design Lead',
     accent: '#7C6EFF',
     members: [
-      { name: 'Design Lead', initials: 'DL', photo: '/team/MD Lead.jpeg' },
+      { name: 'Design Lead 1', initials: 'DL', photo: '/team/design-lead-1.jpg' },
+      { name: 'Design Lead 2', initials: 'DL', photo: '/team/design-lead-2.jpg' },
     ],
   },
   {

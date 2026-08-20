@@ -26,13 +26,17 @@ This folder is served at the URL root `/team/…`, so a file at `/public/team/so
 | **Treasurer**      | `/team/Treasurer.jpeg`    | `public/team/Treasurer.jpeg`      | `.jpeg` |
 | **Technical Lead** | `/team/tech-lead.jpg`     | `public/team/tech-lead.jpg`       | `.jpg`  |
 | **Social Media**   | `/team/social.jpg`        | `public/team/social.jpg`          | `.jpg`  |
-| **Design Lead**    | `/team/MD Lead.jpeg`      | `public/team/MD Lead.jpeg`        | `.jpeg` |
+| **Design Lead 1**  | `/team/design-lead-1.jpg` | `public/team/design-lead-1.jpg`   | `.jpg`  |
+| **Design Lead 2**  | `/team/design-lead-2.jpg` | `public/team/design-lead-2.jpg`   | `.jpg`  |
 | **Event Coord 1**  | `/team/event-coord-1.jpg` | `public/team/event-coord-1.jpg`   | `.jpg`  |
 | **Event Coord 2**  | `/team/event-coord-2.jpg` | `public/team/event-coord-2.jpg`   | `.jpg`  |
 | **Event Coord 3**  | `/team/event-coord-3.jpg` | `public/team/event-coord-3.jpg`   | `.jpg`  |
 
 > [!IMPORTANT]
 > **File names are case-sensitive.** `Treasurer.jpeg` ≠ `treasurer.jpeg`. Make sure the file name exactly matches the `photo` field in the code.
+
+> [!NOTE]
+> **Design Lead is now a 2-member role.** It previously pointed at `MD Lead.jpeg`, but that file was actually the **Media Lead's** photo, not Design Lead's — it has been removed from this entry. Design Lead now has two photo slots (`design-lead-1.jpg` and `design-lead-2.jpg`), same pattern as Event Coordinator. Drop both team members' photos into `public/team/` using those exact names and they'll appear automatically — no code changes needed.
 
 ---
 
@@ -75,7 +79,7 @@ public/team/
 
 ### Step 3 — Update the code (if needed)
 
-Open [`components/SidebarLeft.tsx`](./components/SidebarLeft.tsx) and find the `CORE_TEAM` array at the top of the file (~line 19).
+Open [`components/team/data.ts`](./components/team/data.ts) and find the `CORE_TEAM` array. This is the single source of truth — both the desktop sidebar (`SidebarLeft.tsx`) and the mobile Core Team page (`app/team/page.tsx`) render from it via `<CoreTeamShowcase />`.
 
 Each role entry looks like this:
 
@@ -124,7 +128,7 @@ Use **lowercase, kebab-case** names to avoid confusion:
 
 ## Adding a Multi-Member Role
 
-Some roles (like Event Coordinator) support multiple members. Just add more entries to the `members[]` array:
+Some roles (like Event Coordinator and Design Lead) support multiple members. Just add more entries to the `members[]` array:
 
 ```typescript
 {
@@ -138,7 +142,18 @@ Some roles (like Event Coordinator) support multiple members. Just add more entr
 },
 ```
 
-The tile will automatically switch to a row layout showing all members side by side.
+```typescript
+{
+  role: 'Design Lead',
+  accent: '#7C6EFF',
+  members: [
+    { name: 'Design Lead 1', initials: 'DL', photo: '/team/design-lead-1.jpg' },
+    { name: 'Design Lead 2', initials: 'DL', photo: '/team/design-lead-2.jpg' },
+  ],
+},
+```
+
+The tile will automatically switch to a row layout showing all members side by side — this happens whenever a role has more than 1 entry in `members[]`, no other code changes required. To add a 3rd Design Lead later, just append another `{ name, initials, photo }` entry the same way Event Coordinator has three.
 
 ---
 
