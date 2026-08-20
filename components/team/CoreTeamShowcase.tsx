@@ -11,6 +11,24 @@ const SIZES: Record<Size, { single: number; multi: number; minHeight: number; na
   large: { single: 140, multi: 84, minHeight: 240, name: 20, multiName: 12 },
 }
 
+// `multi` above is tuned for a 3-photo row. Rows with fewer members have
+// extra horizontal room, so scale the photo (and name label) up when there
+// are only 2, and scale down a bit if a role ever grows past 3.
+const MULTI_COUNT_SCALE: Record<number, number> = {
+  2: 1.35,
+  3: 1,
+  4: 0.85,
+}
+function getMultiPhotoSize(base: number, count: number) {
+  const scale = MULTI_COUNT_SCALE[count] ?? (count >= 5 ? 0.72 : 1)
+  return Math.round(base * scale)
+}
+function getMultiNameSize(base: number, count: number) {
+  const scale = MULTI_COUNT_SCALE[count] ?? (count >= 5 ? 0.72 : 1)
+  // Name label scales more gently than the photo so text doesn't dominate
+  return Math.round(base * (1 + (scale - 1) * 0.5))
+}
+
 export function CoreTeamShowcase({
   size = 'compact',
   className = '',
@@ -137,54 +155,68 @@ export function CoreTeamShowcase({
                 </span>
               </>
             ) : (
-              /* ── Multi-member: row of smaller clickable photos ── */
+              /* ── Multi-member: row of clickable photos, sized to fit
+                   how many members are in this particular role ── */
               <>
-                <div className="flex items-start justify-center gap-3 flex-wrap mb-3">
-                  {current.members.map((member, i) => (
-                    <div
-                      key={i}
-                      className="flex flex-col items-center gap-1.5 cursor-pointer"
-                      onClick={() => openLightbox(member, current.accent, current.role)}
-                      title={`Click to enlarge — ${member.name}`}
-                    >
-                      <div className="relative">
-                        <MemberPhoto
-                          photo={member.photo}
-                          initials={member.initials}
-                          accent={current.accent}
-                          size={dims.multi}
-                        />
+                {(() => {
+                  const memberCount = current.members.length
+                  const photoSize = getMultiPhotoSize(dims.multi, memberCount)
+                  const nameSize = getMultiNameSize(dims.multiName, memberCount)
+                  const hintScale = photoSize / dims.multi
+                  const hintSize = Math.round(16 * hintScale)
+                  const hintIcon = Math.round(6 * hintScale)
+
+                  return (
+                    <div className="flex items-start justify-center gap-3 flex-wrap mb-3">
+                      {current.members.map((member, i) => (
                         <div
-                          className="absolute inset-0 rounded-full pointer-events-none"
-                          style={{ boxShadow: `0 0 12px ${current.accent}33` }}
-                        />
-                        {/* Enlarge hint */}
-                        <div
-                          className="absolute bottom-0 right-0 w-4 h-4 rounded-full flex items-center justify-center"
-                          style={{
-                            background: current.accent,
-                            border: '2px solid var(--bg)',
-                          }}
+                          key={i}
+                          className="flex flex-col items-center gap-1.5 cursor-pointer"
+                          onClick={() => openLightbox(member, current.accent, current.role)}
+                          title={`Click to enlarge — ${member.name}`}
                         >
-                          <svg width="6" height="6" viewBox="0 0 8 8" fill="none">
-                            <path d="M1 7L7 1M7 1H4M7 1V4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
+                          <div className="relative">
+                            <MemberPhoto
+                              photo={member.photo}
+                              initials={member.initials}
+                              accent={current.accent}
+                              size={photoSize}
+                            />
+                            <div
+                              className="absolute inset-0 rounded-full pointer-events-none"
+                              style={{ boxShadow: `0 0 12px ${current.accent}33` }}
+                            />
+                            {/* Enlarge hint */}
+                            <div
+                              className="absolute bottom-0 right-0 rounded-full flex items-center justify-center"
+                              style={{
+                                width: hintSize,
+                                height: hintSize,
+                                background: current.accent,
+                                border: '2px solid var(--bg)',
+                              }}
+                            >
+                              <svg width={hintIcon} height={hintIcon} viewBox="0 0 8 8" fill="none">
+                                <path d="M1 7L7 1M7 1H4M7 1V4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </div>
+                          </div>
+                          <span
+                            className="font-medium leading-tight text-center"
+                            style={{
+                              color: 'var(--text-secondary)',
+                              maxWidth: photoSize + 12,
+                              fontFamily: 'var(--font-display)',
+                              fontSize: nameSize,
+                            }}
+                          >
+                            {member.name}
+                          </span>
                         </div>
-                      </div>
-                      <span
-                        className="font-medium leading-tight text-center"
-                        style={{
-                          color: 'var(--text-secondary)',
-                          maxWidth: dims.multi + 12,
-                          fontFamily: 'var(--font-display)',
-                          fontSize: dims.multiName,
-                        }}
-                      >
-                        {member.name}
-                      </span>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )
+                })()}
 
                 {/* Shared role badge */}
                 <span
